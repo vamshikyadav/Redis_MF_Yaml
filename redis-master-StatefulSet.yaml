@@ -17,21 +17,24 @@ spec:
         role: master
         tier: backend
     spec:
+      terminationGracePeriodSeconds: 10
       containers:
       - name: master
         image: k8s.gcr.io/redis:e2e  # or just image: redis
         imagePullPolicy: Always
         ports:
         - containerPort: 6379
-volumeClaimTemplates:
- - metadata:
-     name: data
-     labels:
-       name: redis-cluster
-     annotations:
-       volume.alpha.kubernetes.io/storage-class: anything
-   spec:
-     accessModes: [ "ReadWriteOnce" ]
-     resources:
-       requests:
-         storage: 5Gi
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+      labels:
+        name: redis-cluster
+      annotations:
+        volume.alpha.kubernetes.io/storage-class: anything
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 5Gi
+
+       
