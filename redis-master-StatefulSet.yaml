@@ -1,5 +1,5 @@
 apiVersion: apps/v1 #  for k8s versions before 1.9.0 use apps/v1beta2  and before 1.8.0 use extensions/v1beta1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: redis-master
 spec:
@@ -8,6 +8,7 @@ spec:
       app: redis
       role: master
       tier: backend
+  serviceName: redis
   replicas: 1
   template:
     metadata:
@@ -19,9 +20,18 @@ spec:
       containers:
       - name: master
         image: k8s.gcr.io/redis:e2e  # or just image: redis
-        resources:
-          requests:
-            cpu: 100m
-            memory: 100Mi
+        imagePullPolicy: Always
         ports:
         - containerPort: 6379
+volumeClaimTemplates:
+ - metadata:
+     name: data
+     labels:
+       name: redis-cluster
+     annotations:
+       volume.alpha.kubernetes.io/storage-class: anything
+   spec:
+     accessModes: [ "ReadWriteOnce" ]
+     resources:
+       requests:
+         storage: 5Gi
